@@ -13,7 +13,9 @@ Resources:
       Runtime: java8
       CodeUri: .
       MemorySize: 512
-      Policies: AWSLambdaBasicExecutionRole
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - AmazonDynamoDBFullAccess
       Timeout: 30
       Events:
         ProxyResource:

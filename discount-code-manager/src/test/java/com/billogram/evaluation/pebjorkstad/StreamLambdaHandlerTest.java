@@ -7,6 +7,7 @@ import com.amazonaws.serverless.proxy.internal.testutils.MockLambdaContext;
 import com.amazonaws.serverless.proxy.model.AwsProxyResponse;
 import com.amazonaws.services.lambda.runtime.Context;
 
+import com.billogram.evaluation.pebjorkstad.api.CreateCodesRequest;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -19,6 +20,7 @@ import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -36,7 +38,7 @@ public class StreamLambdaHandlerTest {
 
     @Test
     public void ping_streamRequest_respondsWithHello() {
-        InputStream requestStream = new AwsProxyRequestBuilder("/ping", HttpMethod.GET)
+        InputStream requestStream = new AwsProxyRequestBuilder("discount/ping", HttpMethod.GET)
                                             .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON)
                                             .buildStream();
         ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
@@ -58,7 +60,7 @@ public class StreamLambdaHandlerTest {
 
     @Test
     public void invalidResource_streamRequest_responds404() {
-        InputStream requestStream = new AwsProxyRequestBuilder("/pong", HttpMethod.GET)
+        InputStream requestStream = new AwsProxyRequestBuilder("discount/pong", HttpMethod.GET)
                                             .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON)
                                             .buildStream();
         ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
@@ -68,6 +70,54 @@ public class StreamLambdaHandlerTest {
         AwsProxyResponse response = readResponse(responseStream);
         assertNotNull(response);
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatusCode());
+    }
+
+    @Ignore
+    @Test
+    public void createDiscountCodes() {
+        InputStream requestStream = new AwsProxyRequestBuilder("discount", HttpMethod.POST)
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON)
+                .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .body(CreateCodesRequest.builder()
+                        .brandId(UUID.randomUUID())
+                        .nrOfCodes(5)
+                        .build())
+                .buildStream();
+        ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
+
+        handle(requestStream, responseStream);
+
+        AwsProxyResponse response = readResponse(responseStream);
+        assertNotNull(response);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatusCode());
+
+        assertFalse(response.isBase64Encoded());
+
+        assertTrue(response.getBody().contains("codes"));
+
+        assertTrue(response.getMultiValueHeaders().containsKey(HttpHeaders.CONTENT_TYPE));
+        assertTrue(response.getMultiValueHeaders().getFirst(HttpHeaders.CONTENT_TYPE).startsWith(MediaType.APPLICATION_JSON));
+    }
+
+    @Test
+    public void getDiscountCode() {
+        InputStream requestStream = new AwsProxyRequestBuilder("discount/user/" + UUID.randomUUID(), HttpMethod.GET)
+                .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON)
+                .buildStream();
+        ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
+
+        handle(requestStream, responseStream);
+
+        AwsProxyResponse response = readResponse(responseStream);
+        assertNotNull(response);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatusCode());
+
+        assertFalse(response.isBase64Encoded());
+
+        assertTrue(response.getBody().contains("code"));
+
+        assertTrue(response.getMultiValueHeaders().containsKey(HttpHeaders.CONTENT_TYPE));
+        assertTrue(response.getMultiValueHeaders().getFirst(HttpHeaders.CONTENT_TYPE).startsWith(MediaType.APPLICATION_JSON));
     }
 
     private void handle(InputStream is, ByteArrayOutputStream os) {

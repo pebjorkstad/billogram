@@ -8,11 +8,14 @@ repositories {
 
 dependencies {
   implementation (
+          platform('software.amazon.awssdk:bom:2.15.0'),
+          'software.amazon.awssdk:dynamodb-enhanced',
           'org.springframework.boot:spring-boot-starter-web:2.5.3',
           'com.amazonaws.serverless:aws-serverless-java-container-springboot2:[1.0,)',
-          'io.symphonia:lambda-logging:1.0.1'
+          'io.symphonia:lambda-logging:1.0.1',
+          'org.apache.commons:commons-lang3:3.0',
+          'org.projectlombok:lombok:1.18.18'
   )
-  implementation 'org.projectlombok:lombok:1.18.18'
   compileOnly 'org.projectlombok:lombok:1.18.22'
   annotationProcessor 'org.projectlombok:lombok:1.18.22'
 
