@@ -1,0 +1,12 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "discount-code-manager"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-oy1c55xtvgw0"
+s3_prefix = "discount-code-manager"
+region = "eu-north-1"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+disable_rollback = true
+image_repositories = []

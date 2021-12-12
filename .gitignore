@@ -1,6 +1,15 @@
 # Compiled class file
 *.class
 
+# Build files
+bin.xml
+build
+.gradle
+gradle
+gradlew
+gradlew.bat
+.aws-sam
+
 # Log file
 *.log
 
