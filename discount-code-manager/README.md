@@ -1,19 +1,18 @@
-# discount-code-manager serverless API
-The discount-code-manager project, created with [`aws-serverless-java-container`](https://github.com/awslabs/aws-serverless-java-container).
+# Discount code manager
+The discount code manager consists of an AWS Lambda function that exposes one
+Rest API endpoint /discount. Supported operations are Post and Get. Post is used by
+brands to create discount codes while Get is used by users to retrieve discount codes.
 
-The starter project defines a simple `/ping` resource that can accept `GET` requests with its tests.
-
-The project folder also includes a `template.yml` file. You can use this [SAM](https://github.com/awslabs/serverless-application-model) file to deploy the project to AWS Lambda and Amazon API Gateway or test in local with the [SAM CLI](https://github.com/awslabs/aws-sam-cli). 
+The project folder includes a `template.yml` file. You can use this [SAM](https://github.com/awslabs/serverless-application-model) file to deploy the project to AWS Lambda and Amazon API Gateway or test in local with the [SAM CLI](https://github.com/awslabs/aws-sam-cli). 
 
 ## Pre-requisites
 * [AWS CLI](https://aws.amazon.com/cli/)
 * [SAM CLI](https://github.com/awslabs/aws-sam-cli)
-* [Gradle](https://gradle.org/) or [Maven](https://maven.apache.org/)
+* [Gradle](https://gradle.org/)
 
 ## Building the project
 You can use the SAM CLI to quickly build the project
 ```bash
-$ mvn archetype:generate -DartifactId=discount-code-manager -DarchetypeGroupId=com.amazonaws.serverless.archetypes -DarchetypeArtifactId=aws-serverless-jersey-archetype -DarchetypeVersion=1.6 -DgroupId=com.billogram.evaluation.pebjorkstad -Dversion=1.0-SNAPSHOT -Dinteractive=false
 $ cd discount-code-manager
 $ sam build
 Building resource 'DiscountCodeManagerFunction'
@@ -28,6 +27,7 @@ Built Template   : .aws-sam/build/template.yaml
 Commands you can use next
 =========================
 [*] Invoke Function: sam local invoke
+[*] Test Function in the Cloud: sam sync --stack-name {stack-name} --watch
 [*] Deploy: sam deploy --guided
 ```
 
@@ -39,19 +39,30 @@ From the project root folder - where the `template.yml` file is located - start 
 $ sam local start-api
 
 ...
-Mounting com.amazonaws.serverless.archetypes.StreamLambdaHandler::handleRequest (java8) at http://127.0.0.1:3000/{proxy+} [OPTIONS GET HEAD POST PUT DELETE PATCH]
+Mounting DiscountCodeManagerFunction at http://127.0.0.1:3000/{proxy+} [DELETE, GET, HEAD, OPTIONS, PATCH, POST, PUT]
+You can now browse to the above endpoints to invoke your functions. You do not need to restart/reload SAM CLI while working on your functions, changes will be reflected instantly/automatically. You only need to restart SAM CLI if you update your AWS SAM template
+2021-12-13 13:47:13  * Running on http://127.0.0.1:3000/ (Press CTRL+C to quit)
 ...
 ```
 
-Using a new shell, you can send a test ping request to your API:
+Using a new shell, you can send a test request:
 
 ```bash
-$ curl -s http://127.0.0.1:3000/ping | python -m json.tool
-
-{
-    "pong": "Hello, World!"
+$ curl --request POST \
+   --url http://127.0.0.1:3000/discount \
+   --header 'Content-Type: application/json' \
+   --data \
+    '{
+      "brandId": "95AAC5FF-12F1-49A0-86F6-BA41D3EC7DF6",
+      "nrOfCodes": 1
+    }'
+    
+ {
+    "codes": [
+        "PFVDXC"
+    ]
 }
-``` 
+```
 
 ## Deploying to AWS
 To deploy the application in your AWS account, you can use the SAM CLI's guided deployment process and follow the instructions on the screen
@@ -74,9 +85,17 @@ DiscountCodeManagerApi - URL for application            https://xxxxxxxxxx.execu
 Copy the `OutputValue` into a browser or use curl to test your first request:
 
 ```bash
-$ curl -s https://xxxxxxx.execute-api.us-west-2.amazonaws.com/Prod/ping | python -m json.tool
+$ curl --request POST \
+  --url https://pq6zqu8cc1.execute-api.eu-north-1.amazonaws.com/Prod/discount/ \
+  --header 'Content-Type: application/json' \
+  --data '{
+	"brandId": "95AAC5FF-12F1-49A0-86F6-BA41D3EC7DF6",
+	"nrOfCodes": 1
+}' | python -m json.tool
 
 {
-    "pong": "Hello, World!"
+    "codes": [
+        "UPLMWG"
+    ]
 }
 ```
