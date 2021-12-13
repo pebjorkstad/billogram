@@ -99,6 +99,7 @@ public class StreamLambdaHandlerTest {
         assertTrue(response.getMultiValueHeaders().getFirst(HttpHeaders.CONTENT_TYPE).startsWith(MediaType.APPLICATION_JSON));
     }
 
+    @Ignore
     @Test
     public void getDiscountCode() {
         InputStream requestStream = new AwsProxyRequestBuilder("discount/user/" + UUID.randomUUID(), HttpMethod.GET)

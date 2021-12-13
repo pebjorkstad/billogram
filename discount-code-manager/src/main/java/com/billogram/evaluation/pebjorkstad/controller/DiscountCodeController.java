@@ -1,15 +1,15 @@
 package com.billogram.evaluation.pebjorkstad.controller;
 
 
-import com.billogram.evaluation.pebjorkstad.api.GetDiscountCodeResponse;
-import com.billogram.evaluation.pebjorkstad.api.CreateCodesRequest;
-import com.billogram.evaluation.pebjorkstad.api.CreateCodesResponse;
-import com.billogram.evaluation.pebjorkstad.api.PingResponse;
+import com.billogram.evaluation.pebjorkstad.api.*;
+import com.billogram.evaluation.pebjorkstad.repository.DiscountCode;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.List;
-import java.util.UUID;
+import java.util.NoSuchElementException;
 
 
 @RestController
@@ -27,11 +27,16 @@ public class DiscountCodeController {
     @PostMapping
     public CreateCodesResponse post(@RequestBody CreateCodesRequest request) {
         List<String> codes = handler.generateCodes(request.getBrandId(), request.getNrOfCodes());
-        return CreateCodesResponse.builder().codes(codes).build();
+        return CreateCodesResponse.builder()
+                .codes(codes)
+                .build();
     }
 
-    @GetMapping("/user/{userId}")
-    public GetDiscountCodeResponse getCode(@PathVariable UUID userId) {
-        return GetDiscountCodeResponse.builder().code(userId.toString()).build();
+    @GetMapping
+    public GetDiscountCodeResponse getCode(@RequestBody GetDiscountCodeRequest request) {
+        DiscountCode discountCode = handler.assignCode(request.getBrandId(), request.getUserId());
+        return GetDiscountCodeResponse.builder()
+                .code(discountCode.getDiscountCode())
+                .build();
     }
 }

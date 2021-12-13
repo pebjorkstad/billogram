@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @DynamoDbBean
 @Data
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 public class DiscountCode {

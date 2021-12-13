@@ -1,5 +1,6 @@
 package com.billogram.evaluation.pebjorkstad.controller;
 
+import com.billogram.evaluation.pebjorkstad.repository.DiscountCode;
 import com.billogram.evaluation.pebjorkstad.repository.DiscountCodeRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 
@@ -22,5 +23,9 @@ public class DiscountCodeHandler {
 
     private static String generateCode() {
         return RandomStringUtils.random(6, true, false).toUpperCase();
+    }
+
+    public DiscountCode assignCode(UUID brandId, UUID userId) {
+        return repository.assignCode(brandId, userId);
     }
 }
