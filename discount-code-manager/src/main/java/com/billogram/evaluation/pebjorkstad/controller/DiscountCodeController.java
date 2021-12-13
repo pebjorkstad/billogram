@@ -1,15 +1,11 @@
 package com.billogram.evaluation.pebjorkstad.controller;
 
-
 import com.billogram.evaluation.pebjorkstad.api.*;
 import com.billogram.evaluation.pebjorkstad.repository.DiscountCode;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 
 @RestController
@@ -18,11 +14,6 @@ import java.util.NoSuchElementException;
 public class DiscountCodeController {
 
     private final DiscountCodeHandler handler = new DiscountCodeHandler();
-
-    @GetMapping("/ping")
-    public PingResponse ping() {
-        return PingResponse.builder().build();
-    }
 
     @PostMapping
     public CreateCodesResponse post(@RequestBody CreateCodesRequest request) {

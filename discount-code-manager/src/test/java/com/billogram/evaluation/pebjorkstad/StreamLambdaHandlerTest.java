@@ -36,42 +36,6 @@ public class StreamLambdaHandlerTest {
         lambdaContext = new MockLambdaContext();
     }
 
-    @Test
-    public void ping_streamRequest_respondsWithHello() {
-        InputStream requestStream = new AwsProxyRequestBuilder("discount/ping", HttpMethod.GET)
-                                            .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON)
-                                            .buildStream();
-        ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
-
-        handle(requestStream, responseStream);
-
-        AwsProxyResponse response = readResponse(responseStream);
-        assertNotNull(response);
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatusCode());
-
-        assertFalse(response.isBase64Encoded());
-
-        assertTrue(response.getBody().contains("pong"));
-        assertTrue(response.getBody().contains("Hello, World!"));
-
-        assertTrue(response.getMultiValueHeaders().containsKey(HttpHeaders.CONTENT_TYPE));
-        assertTrue(response.getMultiValueHeaders().getFirst(HttpHeaders.CONTENT_TYPE).startsWith(MediaType.APPLICATION_JSON));
-    }
-
-    @Test
-    public void invalidResource_streamRequest_responds404() {
-        InputStream requestStream = new AwsProxyRequestBuilder("discount/pong", HttpMethod.GET)
-                                            .header(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON)
-                                            .buildStream();
-        ByteArrayOutputStream responseStream = new ByteArrayOutputStream();
-
-        handle(requestStream, responseStream);
-
-        AwsProxyResponse response = readResponse(responseStream);
-        assertNotNull(response);
-        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatusCode());
-    }
-
     @Ignore
     @Test
     public void createDiscountCodes() {
